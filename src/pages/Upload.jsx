@@ -22,7 +22,11 @@ function Upload() {
 
     setUploading(true);
     try {
-      const res = await axios.post("http://localhost:5001/api/upload", formData);
+      const res = await axios.post(
+        "https://upload-art-backend.onrender.com/api/upload", // ✅ Render 백엔드 주소
+        formData
+      );
+
       if (res.data.success) {
         setUploaded(true);
         setImages([]);

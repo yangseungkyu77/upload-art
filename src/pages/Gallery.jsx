@@ -11,7 +11,7 @@ function Gallery() {
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/gallery/${username}`);
+        const res = await axios.get(`https://upload-art-backend.onrender.com/api/gallery/${username}`); // ✅ Render 주소로 수정
         if (res.data.success) {
           setImages(res.data.urls);
         } else {
