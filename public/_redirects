@@ -1,2 +1,1 @@
-# 프리뷰 주소만 정식 주소로 리디렉션 (조건: 정식 도메인이 아닌 경우)
-https://*--startling-meerkat-f970c5.netlify.app/* https://startling-meerkat-f970c5.netlify.app/:splat  301!
+/*    /index.html   200
