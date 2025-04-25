@@ -14,7 +14,7 @@ function Gallery() {
       try {
         const res = await axios.get(`https://upload-art-backend.onrender.com/api/gallery/${username}`);
         if (res.data.success) {
-          setImages(res.data.urls);
+          setImages(res.data.urls); // ✅ string[]으로 받기
         } else {
           setError(res.data.message || "갤러리를 불러오지 못했습니다.");
         }
@@ -39,11 +39,11 @@ function Gallery() {
 
         {!loading && !error && images.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-            {images.map(({ name, url }, i) => (
+            {images.map((url, i) => (
               <img
                 key={i}
                 src={url}
-                alt={name}
+                alt={`img-${i}`}
                 className="rounded shadow cursor-pointer object-cover h-24 w-full"
                 loading="lazy"
                 onClick={() => setSelectedImage(url)}
@@ -57,7 +57,7 @@ function Gallery() {
         )}
       </div>
 
-      {/* ✅ 전체보기 모달 */}
+      {/* ✅ 전체 이미지 보기 모달 */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
