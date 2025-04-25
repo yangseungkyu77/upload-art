@@ -1,6 +1,5 @@
-// src/pages/Upload.jsx
+// Upload.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import bannerImg from "../assets/banner.png";
 
@@ -11,19 +10,28 @@ function Upload() {
   const [uploaded, setUploaded] = useState(false);
   const [successList, setSuccessList] = useState([]);
   const [failList, setFailList] = useState([]);
-  const navigate = useNavigate(); // ✅ 추가
 
   const handleUpload = async () => {
-    if (!name || images.length === 0) return alert("이름과 이미지를 모두 입력해주세요.");
+    if (!name || images.length === 0) {
+      alert("이름과 이미지를 모두 입력해주세요.");
+      return;
+    }
+
     localStorage.setItem("username", name);
 
     const formData = new FormData();
     formData.append("name", name);
-    for (const image of images) formData.append("images", image);
+    for (const image of images) {
+      formData.append("images", image);
+    }
 
     setUploading(true);
     try {
-      const res = await axios.post("https://upload-art-backend.onrender.com/api/upload", formData);
+      const res = await axios.post(
+        "https://upload-art-backend.onrender.com/api/upload",
+        formData
+      );
+
       if (res.data.success) {
         setUploaded(true);
         setSuccessList(res.data.successList || []);
@@ -75,29 +83,21 @@ function Upload() {
         {uploaded && (
           <div className="mt-4 space-y-2">
             {successList.length > 0 && (
-              <>
+              <div>
                 <p className="text-green-600 font-semibold">✅ 성공한 파일:</p>
                 <ul className="text-sm list-disc pl-5 text-green-700">
                   {successList.map((f, i) => <li key={i}>{f}</li>)}
                 </ul>
-              </>
+              </div>
             )}
             {failList.length > 0 && (
-              <>
+              <div>
                 <p className="text-red-600 font-semibold mt-2">❌ 실패한 파일:</p>
                 <ul className="text-sm list-disc pl-5 text-red-700">
                   {failList.map((f, i) => <li key={i}>{f}</li>)}
                 </ul>
-              </>
+              </div>
             )}
-
-            {/* ✅ 갤러리 이동 버튼 */}
-            <button
-              onClick={() => navigate(`/gallery/${name}`)}
-              className="w-full mt-4 bg-green-500 text-white py-2 rounded hover:bg-green-600"
-            >
-              내 갤러리 보기
-            </button>
           </div>
         )}
       </div>
