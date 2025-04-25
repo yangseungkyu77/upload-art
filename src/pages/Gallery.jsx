@@ -5,7 +5,7 @@ import axios from "axios";
 function Gallery() {
   const { username } = useParams();
   const [images, setImages] = useState([]);
-  const [folderLink, setFolderLink] = useState(""); // ✅ 추가
+  const [selectedImage, setSelectedImage] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
@@ -14,8 +14,7 @@ function Gallery() {
       try {
         const res = await axios.get(`https://upload-art-backend.onrender.com/api/gallery/${username}`);
         if (res.data.success) {
-          setImages(res.data.urls || []);
-          setFolderLink(res.data.folderLink || ""); // ✅ 폴더 링크 세팅
+          setImages(res.data.urls); // ✅ [{name, url}]
         } else {
           setError(res.data.message || "갤러리를 불러오지 못했습니다.");
         }
@@ -40,13 +39,13 @@ function Gallery() {
 
         {!loading && !error && images.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-            {images.map((url, i) => (
+            {images.map((img, i) => (
               <img
                 key={i}
-                src={url}
-                alt={`img-${i}`}
-                className="rounded shadow"
-                loading="lazy"
+                src={img.url}
+                alt={img.name}
+                className="rounded shadow cursor-pointer"
+                onClick={() => setSelectedImage(img.url)}
               />
             ))}
           </div>
@@ -55,21 +54,25 @@ function Gallery() {
         {!loading && images.length === 0 && !error && (
           <p className="text-center text-gray-400">업로드된 그림이 없습니다.</p>
         )}
-
-        {/* ✅ 폴더 바로가기 링크 표시 */}
-        {folderLink && (
-          <div className="text-center mt-6">
-            <a
-              href={folderLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 underline"
-            >
-              📂 구글 드라이브 폴더 열기
-            </a>
-          </div>
-        )}
       </div>
+
+      {/* 🔍 전체 이미지 보기 모달 */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+          onClick={() => setSelectedImage(null)}
+        >
+          <div className="relative max-w-full max-h-full">
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-2 right-2 text-white text-3xl font-bold z-10"
+            >
+              &times;
+            </button>
+            <img src={selectedImage} alt="전체보기" className="max-w-full max-h-screen rounded shadow-lg" />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
