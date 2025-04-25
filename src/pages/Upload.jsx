@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import bannerImg from "../assets/banner.png";
 
@@ -8,11 +8,22 @@ function Upload() {
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
 
+  // ✅ 페이지 로드 시 저장된 이름 불러오기
+  useEffect(() => {
+    const savedName = localStorage.getItem("username");
+    if (savedName) {
+      setName(savedName);
+    }
+  }, []);
+
   const handleUpload = async () => {
     if (!name || images.length === 0) {
       alert("이름과 이미지를 모두 입력해주세요.");
       return;
     }
+
+    // ✅ 이름 localStorage에 저장
+    localStorage.setItem("username", name);
 
     const formData = new FormData();
     formData.append("name", name);
@@ -23,7 +34,7 @@ function Upload() {
     setUploading(true);
     try {
       const res = await axios.post(
-        "https://upload-art-backend.onrender.com/api/upload", // ✅ Render 백엔드 주소
+        "https://upload-art-backend.onrender.com/api/upload",
         formData
       );
 
