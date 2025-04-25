@@ -1,20 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import bannerImg from "../assets/banner.png";
 
 function Upload() {
-  const [name, setName] = useState("");
+  const [name, setName] = useState(() => localStorage.getItem("username") || "");
   const [images, setImages] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
-
-  // ✅ 페이지 로드 시 저장된 이름 불러오기
-  useEffect(() => {
-    const savedName = localStorage.getItem("username");
-    if (savedName) {
-      setName(savedName);
-    }
-  }, []);
+  const [successList, setSuccessList] = useState([]);
+  const [failList, setFailList] = useState([]);
 
   const handleUpload = async () => {
     if (!name || images.length === 0) {
@@ -22,7 +16,6 @@ function Upload() {
       return;
     }
 
-    // ✅ 이름 localStorage에 저장
     localStorage.setItem("username", name);
 
     const formData = new FormData();
@@ -40,6 +33,8 @@ function Upload() {
 
       if (res.data.success) {
         setUploaded(true);
+        setSuccessList(res.data.successList || []);
+        setFailList(res.data.failList || []);
         setImages([]);
         document.getElementById("fileInput").value = null;
       } else {
@@ -85,7 +80,24 @@ function Upload() {
         </button>
 
         {uploaded && (
-          <p className="text-green-600 text-center mt-4">✅ 업로드 완료!</p>
+          <div className="mt-4 space-y-2">
+            {successList.length > 0 && (
+              <div>
+                <p className="text-green-600 font-semibold">✅ 성공한 파일:</p>
+                <ul className="text-sm list-disc pl-5 text-green-700">
+                  {successList.map((f, i) => <li key={i}>{f}</li>)}
+                </ul>
+              </div>
+            )}
+            {failList.length > 0 && (
+              <div>
+                <p className="text-red-600 font-semibold mt-2">❌ 실패한 파일:</p>
+                <ul className="text-sm list-disc pl-5 text-red-700">
+                  {failList.map((f, i) => <li key={i}>{f}</li>)}
+                </ul>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </div>
