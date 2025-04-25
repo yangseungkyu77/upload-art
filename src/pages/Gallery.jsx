@@ -5,15 +5,17 @@ import axios from "axios";
 function Gallery() {
   const { username } = useParams();
   const [images, setImages] = useState([]);
+  const [folderLink, setFolderLink] = useState(""); // ✅ 추가
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const res = await axios.get(`https://upload-art-backend.onrender.com/api/gallery/${username}`); // ✅ Render 주소로 수정
+        const res = await axios.get(`https://upload-art-backend.onrender.com/api/gallery/${username}`);
         if (res.data.success) {
-          setImages(res.data.urls);
+          setImages(res.data.urls || []);
+          setFolderLink(res.data.folderLink || ""); // ✅ 폴더 링크 세팅
         } else {
           setError(res.data.message || "갤러리를 불러오지 못했습니다.");
         }
@@ -52,6 +54,20 @@ function Gallery() {
 
         {!loading && images.length === 0 && !error && (
           <p className="text-center text-gray-400">업로드된 그림이 없습니다.</p>
+        )}
+
+        {/* ✅ 폴더 바로가기 링크 표시 */}
+        {folderLink && (
+          <div className="text-center mt-6">
+            <a
+              href={folderLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 underline"
+            >
+              📂 구글 드라이브 폴더 열기
+            </a>
+          </div>
         )}
       </div>
     </div>
