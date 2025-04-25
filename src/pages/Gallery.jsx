@@ -5,16 +5,16 @@ import axios from "axios";
 function Gallery() {
   const { username } = useParams();
   const [images, setImages] = useState([]);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     const fetchImages = async () => {
       try {
         const res = await axios.get(`https://upload-art-backend.onrender.com/api/gallery/${username}`);
         if (res.data.success) {
-          setImages(res.data.urls); // ✅ [{name, url}]
+          setImages(res.data.urls);
         } else {
           setError(res.data.message || "갤러리를 불러오지 못했습니다.");
         }
@@ -39,13 +39,14 @@ function Gallery() {
 
         {!loading && !error && images.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
-            {images.map((img, i) => (
+            {images.map(({ name, url }, i) => (
               <img
                 key={i}
-                src={img.url}
-                alt={img.name}
-                className="rounded shadow cursor-pointer"
-                onClick={() => setSelectedImage(img.url)}
+                src={url}
+                alt={name}
+                className="rounded shadow cursor-pointer object-cover h-24 w-full"
+                loading="lazy"
+                onClick={() => setSelectedImage(url)}
               />
             ))}
           </div>
@@ -56,21 +57,19 @@ function Gallery() {
         )}
       </div>
 
-      {/* 🔍 전체 이미지 보기 모달 */}
+      {/* ✅ 전체보기 모달 */}
       {selectedImage && (
         <div
           className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
           onClick={() => setSelectedImage(null)}
         >
-          <div className="relative max-w-full max-h-full">
-            <button
-              onClick={() => setSelectedImage(null)}
-              className="absolute top-2 right-2 text-white text-3xl font-bold z-10"
-            >
-              &times;
-            </button>
-            <img src={selectedImage} alt="전체보기" className="max-w-full max-h-screen rounded shadow-lg" />
-          </div>
+          <img src={selectedImage} alt="Full" className="max-w-full max-h-full rounded" />
+          <button
+            className="absolute top-4 right-4 text-white text-2xl font-bold"
+            onClick={() => setSelectedImage(null)}
+          >
+            ✕
+          </button>
         </div>
       )}
     </div>
